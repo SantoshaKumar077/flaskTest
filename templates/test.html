@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" 
+   integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+   <style>body{background-color: rgb(175, 241, 241); padding: 10px;}</style>
+  <title>HelmEngine</title>
+</head>
+
+<body>
+  <form action="{{ url_for('showForm')}}" method="post" enctype = "multipart/form-data">
+
+    <!-- Application name -->
+    <div class="form-group">
+      <label for="appName"><b> Application Name </b></label>
+      <input type="text" class="form-control" style="width: 500px;" id="appName" name="appName" aria-describedby="Help"
+        placeholder="Provide a name to your Application">
+    </div>
+    <!-- Namespace -->
+    <div class="form-group">
+      <label for="namespace"><b> Namespace </b></label>
+      <small id="namespace" class="form-text text-muted">(Mention the namespace if you have any.)</small>
+      <input type="text" class="form-control" style="width: 500px;" id="namespace" name="namespace" aria-describedby="Help"
+        placeholder="default">
+    </div>
+    <!-- Replica Count -->
+    <div class="form-group">
+      <label for="replicas"><b> Replica Count </b></label>
+      <small id="replicas" class="form-text text-muted">(Mention the minimum number of initial pods you want in your
+        cluster.)</small>
+      <input type="range" class="custom-range" style="width: 500px;" min="1" max="10" value="1" id="replicas" name="replicas" onInput="$('#rangeval').html($(this).val())">
+      <span id="rangeval"></span>
+    </div>
+    <!-- Image Specification -->
+    <div class="form-group">
+      <label for="image"><b> Image Specification </b></label>
+      <small id="image" class="form-text text-muted">(Specify the details of the Docker image you want do deploy to your
+        cluster.)</small>
+      <!-- Image Registry Name -->
+      <div>
+        <label for="imageReg">Image Registry</label>
+        <input type="text" class="form-control" style="width: 500px;" id="imageReg" name="imageReg" aria-describedby="Help"
+          placeholder="Provide the Image Registry URL">
+      </div>
+      <!-- Image Repository Name -->
+      <div>
+        <label for="imageRep">Image Name</label>
+        <input type="text" class="form-control" id="imageRep" style="width: 500px;" name="imageRep" aria-describedby="Help"
+          placeholder="Provide the Image Name">
+      </div>
+      <!-- Image Verssion -->
+      <div>
+        <label for="imageTag">Image Version</label>
+        <input type="text" class="form-control" id="imageTag" style="width: 500px;" name="imageTag" aria-describedby="Help"
+          placeholder="Provide the Image Version">
+      </div>
+      <!-- Imgae Pull Policy -->
+      <div class="form-group">
+        <label for="imgPullPolicy">Image Pull Policy</label>
+        <select class="form-control" style="width: 500px;" id="exampleFormControlSelect1" name="imgPullPolicy" oninput="$('#option').html($(this).val())">
+          <option>IfNotPresent</option>
+          <option>Always</option>
+          <option>Never</option>
+        </select>
+      </div>
+    </div>
+
+    <!--Memory and CPU specification for pods -->
+    <div class="form-group">
+      <label for="pod"><b> Resource Limits </b></label>
+      <small id="pod" class="form-text text-muted">(Specify the amount of CPU and memory  for each pod.)</small>
+      <!-- CPU size for pods -->
+      <div>
+        <label for="podCpu">CPU Limits</label>
+        <input type="range" class="custom-range" style="width: 500px;" min="1" max="500" name="podCpu" id="podCpu" onInput="$('#CPU').html($(this).val())">
+        <span id="CPU"></span>
+        <span>millicpu</span>
+      </div>
+      <!-- Memory size for pods -->
+      <div>
+        <label for="podMemory">Memory Limits</label>
+        <input type="range" class="custom-range" style="width: 500px;" min="1" name="podMemory" max="1000" id="podMemory" onInput="$('#memory').html($(this).val())">
+        <span id="memory"></span>
+        <span>Mi</span>
+      </div>
+    </div>
+
+    <!-- Autoscaling for pods -->
+    <div>
+      <!-- <input class="form-check-input" type="checkbox" name="autoScale" id="examplecheckboxs1" value="yes"> -->
+      <label for="AutoScale"><b>Do you want to enable autoscaling for pods.</b></label>
+      <input type="checkbox" class="control" name="autoScale" id="option1" autocomplete="off" value="yes"> yes
+        <input type="checkbox" name="autoScale" id="option2" autocomplete="off" value="no"> no
+        <fieldset class="conditional">
+          <ol>
+            <div>
+              <!-- Minimum number of pods required -->
+              <div>
+                <label for="minRepl">Minimum Number of pods required.</label>
+                <input type="range" class="custom-range" style="width: 500px;" min="1" name="minRepl" max="10" id="minRepl" onInput="$('#minPods').html($(this).val())">
+                <span id="minPods"></span>
+              </div>
+              <!-- Maximum number of pods required -->
+              <div>
+                <label for="maxRepl">Maximum number of pods required.</label>
+                <input type="range" class="custom-range" style="width: 500px;" min="1" name="maxRepl" max="50" id="maxRepl" onInput="$('#maxPods').html($(this).val())">
+                <span id="maxPods"></span>
+              </div>
+              <!-- Threshold conditon for autoscaling -->
+              <div>
+                <label for="Threshold">Utilisation Threshold for Autoscaling</label>
+                <input type="range" class="custom-range" style="width: 500px;" min="50" name="Threshold" max="100" id="Threshold" onInput="$('#threshold').html($(this).val())">
+                <span id="threshold"></span>
+                <span>%</span>
+              </div>
+            </div>
+          </ol>
+        </fieldset>      
+    </div>
+
+    <!-- For Service -->
+    <div class="form-group">
+      <label for="InputService"><b>Service</b></label>
+    </div>
+    <div>
+      <!-- Enabling Service -->
+      <label for="InputService">Enable</label>
+      <input type="checkbox" class="control" name="Service" id="option1" autocomplete="off" value="yes"> yes
+      <input type="checkbox" name="Service" id="option2" autocomplete="off"> no
+      <fieldset class="conditional">
+        <ol>
+          <!-- Input Type -->
+          <div class="form-group">
+            <label for="InputService">Type</label>
+            <!-- Choose Type -->
+            <select class="form-control" style="width: 500px;" id="exampleFormControlSelect1" name="svcType">
+              <option>LoadBalancer</option>
+              <option>NodePort</option>
+              <option>Cluster IP</option>
+            </select>
+          </div>
+          <!-- input ports -->
+          <div class="col-md-4 mb-3">
+            <label for="ServicePort">Port</label>
+            <input type="text" class="form-control is-valid" style="width: 500px;" name="svcPort" id="ServicePort" placeholder="80" >
+          </div>
+          <!-- target port -->
+          <div class="col-md-4 mb-3">
+            <label for="ServiceTargetPort">Target Port</label>
+            <input type="text" class="form-control is-valid" style="width: 500px;" name="svcTargetPort" id="ServiceTargetPort"
+              placeholder="8080" >
+          </div>
+        </ol>
+      </fieldset>     
+    </div>
+
+    <!-- For ingress configuration -->
+    <div>
+      <label for="InputIngress"><b>Ingress</b></label>
+    </div>
+    <!-- Enabling ingress -->
+    <div>
+      <label for="InputIngress">Enable</label>
+
+      <input type="checkbox" class="control" name="Ingress" id="option1" autocomplete="off" value="yes"> yes
+      <input type="checkbox" name="options" id="option2" autocomplete="off"> no
+      <fieldset class="conditional">
+        <ol>
+          <div class="form-group">
+            <label for="ingController">Ingress Controller</label>
+            <!-- Choose Type -->
+            <select class="form-control" style="width: 500px;" id="ingController" name="ingController">
+              <option>Nginx</option>
+              <option>Application Gateway</option>
+            </select>
+          </div>         
+          <!-- input ingress class name -->
+          <div>
+            <label for="IngressClassName">Ingress Class Name</label>
+            <input type="text" style="width: 500px;" class="form-control is-valid" name="ingClsName" id="ServiceTargetPort"
+              placeholder="tomcat-example" >
+          </div>
+          <div>
+            <label for="ServicePort">Service Port</label>
+            <input type="text" style="width: 500px;" class="form-control is-valid" name="ingSvcPort" id="ServicePort" placeholder="80" >
+          </div>
+          <div>
+            <label for="ingPath">Route Path</label>
+            <input type="text" style="width: 500px;" class="form-control is-valid" name="ingPath" id="ingPath" placeholder="/test" >
+          </div>
+          <!-- input pathType -->
+          <div>
+            <label for="InputIngress">Path Type</label>
+            <!-- Choose Type -->
+            <select class="form-control" style="width: 500px;" id="exampleFormControlSelect1" name="ingPathType">
+              <option>Prefix</option>
+              <option>ImplementationSpecific</option>
+              <option>Exact</option>
+            </select>
+          </div>
+          <!-- input host -->
+          <div>
+            <label for="IngressHost">Hosts</label>
+            <input type="text" style="width: 500px;" class="form-control is-valid" name="ingHost" id="IngressHost" placeholder="example.com" >
+          </div>
+        </ol>
+      </fieldset>
+    </div>
+
+    <!-- ConfigMap -->
+    <div>
+      <label for="InputConfigMap"><b>ConfigMap</b></label>
+    </div>
+    <div>
+      <!-- Enabling ConfigMap -->
+      <label for="InputIngress">Enable</label>
+      <input type="checkbox" class="control" name="ConfigMap" id="option1" autocomplete="off" value="yes"> yes
+      <input type="checkbox" name="ConfigMap" id="option2" autocomplete="off" value="no"> no
+      <fieldset class="conditional">
+        <ol>
+          <!-- File path -->
+          <div>
+            <label for="InputConfigfile">File</label>
+            <input type="file" id="actual-btn" style="width: 500px;" name="configFile"/>
+          </div>
+          <div>
+            <label for="configMount">Mount Path (path to mount the configFile)</label>
+            <input type="text" id="actual-btn" style="width: 500px;" name="configMount" placeholder="/usr/config">
+          </div>
+        </ol>
+      </fieldset>  
+    </div>
+
+    <!-- Secrets -->
+    <div>
+      <label for="InputSecrets"><b>Secrets</b></label>
+    </div>  
+      <!-- Enabling Secrets -->
+      <div>
+        <label for="InputSecrets">Enable</label>
+        <input type="checkbox" class="control" name="Secrets" id="option1" autocomplete="off" value="yes"> yes
+        <input type="checkbox" name="Secrets" id="option2" autocomplete="off" value="no"> no
+        <fieldset class="conditional">
+          <ol>
+            <div>
+              <label for="InputIngress">Secret File</label>
+              <input type="file" id="actual-btn" style="width: 500px;" name="secretFile">
+            </div>
+            <div>
+              <label for="secretMount">Mount Path (path to mount the secretFile)</label>
+              <input type="text" id="actual-btn" style="width: 500px;" name="secretMount" placeholder="/usr/secret">
+            </div>
+          </ol>
+        </fieldset>
+      </div>
+
+    <!-- Health Probes -->
+    <div>
+      <label for="InputProbes"><b>Probes</b></label>
+    </div>
+    <!-- Enabling Probes -->
+    <div>
+      <label for="InputProbes">Enable</label>
+      <input type="checkbox" class="control" name="Probes" id="option1" autocomplete="off" value="yes"> yes
+      <input type="checkbox" name="Probes" id="option2" autocomplete="off" value="no"> no
+      <fieldset class="conditional">
+        <ol>
+
+        </ol>
+      </fieldset>    
+    </div>
+
+    <!-- Volume Persistence -->
+    <div>
+      <label for="InputPersist"><b>Volume Persistence</b></label>
+    </div>
+    <!-- Enabling Persistance -->
+    <div>
+      <label for="InputPersist">Enable</label>
+      <input type="checkbox" class="control" name="Persist" id="option1" autocomplete="off" value="yes"> yes
+      <input type="checkbox" name="Persist" id="option2" autocomplete="off" value="no"> no
+      <fieldset class="conditional">
+        <ol>
+          <div>
+            <!-- Access Modes -->
+            <div>
+              <label for="accessmode">Access mode</label>
+              <!-- Choose Type -->
+              <select class="form-control" style="width: 500px;" id="exampleFormControlSelect1" name="accessMode">
+                <option>ReadWriteOnce</option>
+                <option>ReadOnlyMany</option>
+                <option>ReadWriteMany</option>
+                <option>ReadWriteOncePod</option>
+              </select>
+            </div>
+            <!-- Input Storage Size -->
+            <div>
+              <label for="storage">Storage Size</label>
+              <input type="range" class="custom-range" style="width: 500px;" min="100" name="storageSize" max="5000" id="podMemory" onInput="$('#storage').html($(this).val())">
+              <span id="storage"></span>
+              <span>Mi</span>
+            </div>
+            <!-- Local Volume -->
+            <div>
+              <label for="path">Local Volume(which needs to be mounted to pod)</label>
+              <input type="path" class="form-control" style="width: 500px;" name="localPath" id="localPath" placeholder="existing directory to be mounted">
+            </div>
+            <!-- Mount Path -->
+            <div>
+              <label for="path">Mount Path(for Volume Persistance)</label>
+              <input type="path" class="form-control" name="mountPath" style="width: 500px;" id="mountPath" placeholder="/home/data">
+            </div>
+            <!-- Input StorgeClass Name -->
+            <div>
+              <label for="StorageClassName">StorageClass Name</label>
+              <input type="scName" name="storageClsName" class="form-control" style="width: 500px;" id="InputName" placeholder="local-storage">
+            </div>
+          </div>
+        </ol>
+      </fieldset>      
+    </div>
+
+    <!-- Submit Button -->
+    <div>
+      <button type="submit">Submit</button>
+    </div>
+  </form>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+</body>
+</html>

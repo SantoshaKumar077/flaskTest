@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table</title>
+</head>
+<body>
+    <h1>Here is your multiplication table for {{ numTable }}</h1>
+
+    {# for the comments that are not included in the template output #} 
+    {# here the {{ numTable }} is a jinja delimeter which can contain the value returned from jinja() function. #}
+    {# Here the delimeter {{ some_value }} is used to print to the template output #}
+    
+    {% for i  in range(1,11): %}
+        <h3>{{numTable}} X {{i}} = {{numTable * i}} </h3>  
+    {% endfor %}
+
+    {# the delimiter {% for %} which can be used to embed the simple python statements into the HTML. #}
+    {# Here, we must notice that the for-loop statement is enclosed inside {%...%} delimiter, whereas, the loop variable and the number is enclosed inside {{ ... }} placeholders. #}
+</body>
+</html>
